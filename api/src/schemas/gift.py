@@ -6,11 +6,11 @@ class Gift(BaseModel):
     nft_contract: str
 
 
-class GiftToBookIn(Gift):
-    receiver_address: str
-
-
 class VerificationCodeOut(Gift):
     verification_code: str
+
+
+class GiftToBookIn(VerificationCodeOut):
+    receiver_address: str
 
 
