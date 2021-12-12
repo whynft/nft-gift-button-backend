@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     LOGGER_NAME: str = 'app_logger'
 
     ETHEREUM_PRIVATE_KEY: str
+    ETHEREUM_PUBLIC_ADDRESS: str
     DARILKA_CONTRACT: str
 
     CRYPTO_SDK_ENDPOINT: str = 'http://crypto_sdk:8080/'
