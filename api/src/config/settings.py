@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     ETHEREUM_PRIVATE_KEY: str
     ETHEREUM_PUBLIC_ADDRESS: str
     DARILKA_CONTRACT: str
+    INFURA_HTTPS_ENDPOINT: str
 
     CRYPTO_SDK_ENDPOINT: str = 'http://crypto_sdk:8080/'
 

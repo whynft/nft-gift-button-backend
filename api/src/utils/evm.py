@@ -7,11 +7,11 @@ from config.settings import settings
 
 logger = get_app_logger()
 
+# todo: to env?
 darilka_contract = '[ { "inputs": [ { "internalType": "uint256", "name": "_comission", "type": "uint256" } ], "stateMutability": "nonpayable", "type": "constructor" }, { "inputs": [ { "internalType": "address", "name": "receiver", "type": "address" }, { "internalType": "address", "name": "nftContract", "type": "address" }, { "internalType": "uint256", "name": "tokenId", "type": "uint256" } ], "name": "bookTransfer", "outputs": [], "stateMutability": "payable", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "newOwner", "type": "address" } ], "name": "changeOwner", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "sender", "type": "address" }, { "internalType": "address", "name": "receiver", "type": "address" }, { "internalType": "address", "name": "nftContract", "type": "address" }, { "internalType": "uint256", "name": "tokenId", "type": "uint256" }, { "internalType": "string", "name": "confirmation", "type": "string" } ], "name": "performTransferNFT", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "nftContract", "type": "address" }, { "internalType": "uint256", "name": "tokenId", "type": "uint256" }, { "internalType": "bytes32", "name": "keccak256ConfirmationHash", "type": "bytes32" } ], "name": "setConfirmation", "outputs": [], "stateMutability": "payable", "type": "function" } ]'
 darilka_contract_abi = json.loads(darilka_contract)
 
-infura_api = 'https://rinkeby.infura.io/v3/a39418e6ade04bfdbccdf8f0bbcc94f1'
-w3 = Web3(Web3.HTTPProvider(infura_api))
+w3 = Web3(Web3.HTTPProvider(settings.INFURA_HTTPS_ENDPOINT))
 
 
 def crypto_book(receiver_address: str, nft_contract: str, nft_token: str):
@@ -21,12 +21,14 @@ def crypto_book(receiver_address: str, nft_contract: str, nft_token: str):
     )
 
     # todo: nonce updates not to fast
-    # to thread? another nonce behaviour?
+    # to thread job? another nonce behaviour?
     nonce = w3.eth.get_transaction_count(Web3.toChecksumAddress(settings.ETHEREUM_PUBLIC_ADDRESS))
     logger.info(f'Current {nonce = } for {settings.ETHEREUM_PUBLIC_ADDRESS = }.')
 
     txn_dict = (
-        contract.functions.bookTransfer(
+        contract
+        .functions
+        .bookTransfer(
             Web3.toChecksumAddress(receiver_address),
             Web3.toChecksumAddress(nft_contract),
             int(nft_token)
