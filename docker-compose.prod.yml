@@ -1,0 +1,34 @@
+version: "3.9"
+
+volumes:
+  redis_data_prod:
+
+x-app: &prod-app
+  logging:
+    driver: "json-file"
+    options:
+      max-file: "3"
+      max-size: "10m"
+  restart: always
+
+services:
+  api:
+    <<: *prod-app
+    build: api
+    env_file:
+      - .env
+    ports:
+      - $DOCKER_API_PORT:8000
+    depends_on:
+      - redis
+
+  crypto_sdk:
+    <<: *prod-app
+    build: crypto_sdk
+    command: [ "npm", "run", "dev" ]
+
+  redis:
+    <<: *prod-app
+    image: redis:6.0.8-alpine
+    volumes:
+      - redis_data_prod:/data
