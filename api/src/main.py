@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.api import api_router
 from config.logger import get_app_logger
 from config.settings import settings, LOGGING
-
+from utils.evm import warming_nonce
 
 dictConfig(LOGGING)
 logger = get_app_logger()
@@ -15,6 +15,12 @@ app = FastAPI(
     title='NFT Gift API',
     openapi_url=f'{settings.API_V1}/openapi.json',
 )
+
+
+@app.on_event("startup")
+async def startup_event():
+    logger.info("Prepare and initiate nonce according to the chain...")
+    await warming_nonce()
 
 app.add_middleware(
     CORSMiddleware,

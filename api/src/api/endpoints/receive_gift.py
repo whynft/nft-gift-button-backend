@@ -56,7 +56,7 @@ async def book(gift_in: schemas.GiftToBookIn):
             content={"message": f"Verification code is invalid for: {gift_in}"},
         )
 
-    res = crypto_book(
+    res = await crypto_book(
         receiver_address=gift_in.receiver_address, nft_token=gift_in.nft_token, nft_contract=gift_in.nft_contract,
     )
     # todo: deprecate Js and Js microservice
