@@ -5,7 +5,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.api import api_router
 from config.logger import get_app_logger
 from config.settings import settings, LOGGING
-from utils.evm import warming_nonce
 
 dictConfig(LOGGING)
 logger = get_app_logger()
@@ -17,11 +16,6 @@ app = FastAPI(
 )
 
 
-@app.on_event("startup")
-async def startup_event():
-    logger.info("Prepare and initiate nonce according to the chain...")
-    await warming_nonce()
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -29,5 +23,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.on_event("startup")
+async def startup_event():
+    from utils.evm import warming_nonce
+
+    logger.info("Prepare and initiate nonce according to the chain...")
+    await warming_nonce()
+
 
 app.include_router(api_router, prefix=settings.API_V1)

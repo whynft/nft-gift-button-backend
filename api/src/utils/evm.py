@@ -13,7 +13,7 @@ darilka_contract = '[ { "inputs": [ { "internalType": "uint256", "name": "_comis
 darilka_contract_abi = json.loads(darilka_contract)
 NONCE_KEY = f"nonce_{settings.ETHEREUM_PUBLIC_ADDRESS}"  # todo: to crud
 
-w3 = Web3(Web3.HTTPProvider(settings.INFURA_HTTPS_ENDPOINT))
+w3 = Web3(Web3.HTTPProvider(settings.INFURA_HTTPS_ENDPOINT, request_kwargs={'timeout': 60}))
 
 
 async def warming_nonce():
@@ -27,7 +27,7 @@ async def crypto_book(receiver_address: str, nft_contract: str, nft_token: str):
         abi=darilka_contract_abi,
     )
 
-    nonce = await redis.incr(NONCE_KEY)
+    nonce = int(await redis.incr(NONCE_KEY)) - 1
     logger.info(f'Prepare next operation with {nonce = } for {settings.ETHEREUM_PUBLIC_ADDRESS = }.')
 
     txn_dict = (
