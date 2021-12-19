@@ -2,8 +2,12 @@
 
 pragma solidity >=0.7.0 <0.9.0;
 
+interface Ownable {
+    function ownerOf(uint256 tokenId) external returns(address);
+}
+
 interface Transferable {
-    function safeTransferFrom(address from, address to, uint256 tokenId) external payable;
+    function safeTransferFrom(address from, address to, uint256 tokenId) external;
 }
 
 /**
@@ -15,7 +19,7 @@ interface Transferable {
 contract Darilka {
 
     address private owner;
-    uint256 private comission;
+    uint256 private commission;
 
  // modifier to check if caller is owner
     modifier isOwner() {
@@ -40,17 +44,29 @@ contract Darilka {
     /**
      * @dev Set contract deployer as owner
      */
-    constructor(uint256 _comission) {
+    constructor(uint256 _commission) {
         owner = msg.sender; // 'msg.sender' is sender of current call, contract deployer for a constructor
-        comission = _comission;
+        commission = _commission;
     }
 
     /**
      * @dev Change owner
      * @param newOwner address of new owner
      */
-    function changeOwner(address newOwner) public isOwner {
+    function setOwner(address newOwner) public isOwner {
         owner = newOwner;
+    }
+
+    function getOwner() public view returns (address) {
+        return owner;
+    }
+
+    function getComission() public view returns (uint256) {
+        return commission;
+    }
+
+    function withdraw() public payable isOwner {
+        payable(owner).transfer(address(this).balance);
     }
 
     /**
@@ -59,7 +75,8 @@ contract Darilka {
      * @param tokenId uint256 nft order id in contract
      */
     function setConfirmation(address nftContract, uint256 tokenId, bytes32 keccak256ConfirmationHash) payable public {
-        require(msg.value >= comission);
+        require(Ownable(nftContract).ownerOf(tokenId) == msg.sender, "only nft owner could confirm password hash");
+        require(msg.value >= commission, "expect collateral not less than commission");
         confirmationHashes[keccak256(abi.encodePacked(nftContract, tokenId))] = keccak256ConfirmationHash;
     }
 
@@ -70,7 +87,7 @@ contract Darilka {
 
     function bookTransfer(address receiver, address nftContract, uint256 tokenId) payable public isOwner {
         bookedTransfer[keccak256(abi.encodePacked(nftContract, tokenId))] = receiver;
-        payable(receiver).transfer(comission / 2);
+        payable(receiver).transfer(commission / 2);
     }
 
 
