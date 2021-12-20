@@ -24,8 +24,6 @@ class Settings(BaseSettings):
 
     @validator('DARILKA_CONTRACT_ABI_JSON', pre=True)
     def decode_json(cls, v):
-        print(v)
-        print(type(v))
         if isinstance(v, str):
             try:
                 return json.loads(v)
