@@ -63,7 +63,7 @@ async def book(gift_in: schemas.GiftToBookIn):
     # res = await crypto_sdk.book(
     #     gift_in,
     #     centralized_backend_key=settings.ETHEREUM_PRIVATE_KEY,
-    #     transfer_contract=settings.DARILKA_CONTRACT,
+    #     transfer_contract=settings.DARILKA_CONTRACT_ADDRESS,
     # )
     logger.info(f'Booked through crypto, got {res}')
 
