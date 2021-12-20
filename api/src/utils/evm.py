@@ -23,7 +23,7 @@ async def warming_nonce():
 
 async def crypto_book(receiver_address: str, nft_contract: str, nft_token: str):
     contract = w3.eth.contract(
-        address=Web3.toChecksumAddress(settings.DARILKA_CONTRACT),
+        address=Web3.toChecksumAddress(settings.DARILKA_CONTRACT_ADDRESS),
         abi=darilka_contract_abi,
     )
 

@@ -1,4 +1,6 @@
-from pydantic import BaseSettings, HttpUrl
+import json
+
+from pydantic import BaseSettings, validator
 
 
 class Settings(BaseSettings):
@@ -8,7 +10,8 @@ class Settings(BaseSettings):
 
     ETHEREUM_PRIVATE_KEY: str
     ETHEREUM_PUBLIC_ADDRESS: str
-    DARILKA_CONTRACT: str
+    DARILKA_CONTRACT_ADDRESS: str
+    DARILKA_CONTRACT_ABI_JSON: list
     INFURA_HTTPS_ENDPOINT: str
 
     CRYPTO_SDK_ENDPOINT: str = 'http://crypto_sdk:8080/'
@@ -18,6 +21,17 @@ class Settings(BaseSettings):
 
     class Config:
         case_sensitive = True
+
+    @validator('DARILKA_CONTRACT_ABI_JSON', pre=True)
+    def decode_json(cls, v):
+        print(v)
+        print(type(v))
+        if isinstance(v, str):
+            try:
+                return json.loads(v)
+            except ValueError:
+                pass
+        return v
 
 
 settings = Settings()

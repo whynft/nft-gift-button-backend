@@ -18,4 +18,4 @@ logger = get_app_logger()
     response_model=schemas.DarilkaContract,
 )
 async def darilka_contract():
-    return {'address': settings.DARILKA_CONTRACT}
+    return {'address': settings.DARILKA_CONTRACT_ADDRESS, 'abi': settings.DARILKA_CONTRACT_ABI_JSON}
