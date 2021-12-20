@@ -8,7 +8,7 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.4.1/contr
 
 
 contract ERC721TestMintable is ERC721 {
-    constructor() ERC721("Test", "Test") public {
+    constructor() ERC721("Test", "Test") {
     }
     function safeMint(address to, uint256 tokenId) public returns (bool) {
         _safeMint(to, tokenId);

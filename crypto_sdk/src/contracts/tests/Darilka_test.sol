@@ -11,7 +11,8 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.4.1/contr
 
 
 contract DarilkaTest {
-    uint256 comission = 0.01 ether;
+    uint256 comission = 0.05 ether;
+    uint256 amountForReceiver = 0.05 ether;
 
     address owner;
     address sender;
@@ -30,7 +31,7 @@ contract DarilkaTest {
         owner = TestsAccounts.getAccount(0);
         sender = TestsAccounts.getAccount(1);
         receiver = TestsAccounts.getAccount(2);
-        darilka = new Darilka(comission);
+        darilka = new Darilka(comission, amountForReceiver);
         darilka.setOwner(owner);
         collection = new ERC721TestMintable();
         collection.safeMint(sender, nftTokenId);
@@ -38,22 +39,23 @@ contract DarilkaTest {
 
 /// #sender: account-0
     function testContractAfterInit() public {
-        Assert.equal(msg.sender, owner, "wrong msg sender");
-        Assert.equal(darilka.getComission(), comission, "wrong comission");
-        Assert.equal(darilka.getOwner(), owner, "unexpected owner");
+        Assert.equal(msg.sender, owner, "Wrong msg sender");
+        Assert.equal(darilka.getComission(), comission, "Wrong comission");
+        Assert.equal(darilka.getAmountForReceiver(), amountForReceiver, "Wrong amountForReceiver");
+        Assert.equal(darilka.getOwner(), owner, "Unexpected owner");
     }
 
 /// #sender: account-1
     function testOuterContractOwnerChange() public {
-        Assert.equal(msg.sender, sender, "wrong msg sender");
+        Assert.equal(msg.sender, sender, "Wrong msg sender");
         try darilka.setOwner(msg.sender) {
-            require(false, "should revert");
+            require(false, "Should revert");
         } catch (bytes memory /*lowLevelData*/) {}
     }
 
     function testNftPermissions() public {
-        Assert.equal(sender, collection.ownerOf(nftTokenId), "wrong owner");
-        Assert.equal(address(0), collection.getApproved(nftTokenId), "expect nobody approved");
+        Assert.equal(sender, collection.ownerOf(nftTokenId), "Wrong owner");
+        Assert.equal(address(0), collection.getApproved(nftTokenId), "Expect nobody approved");
     }
 
 // /// #sender: account-0
@@ -67,9 +69,9 @@ contract DarilkaTest {
 /// #sender: account-1
 /// #value: 10000000000000000
     function testDarilkaGoodSenderConfirmation() public payable {
-        Assert.equal(msg.value, comission, "expect value = comission");
-        Assert.equal(msg.sender, sender, "wrong msg sender");
-        darilka.setConfirmation{value:msg.value}(address(0), nftTokenId, passwordKeccakk256Hash);
+        Assert.equal(msg.value, comission + amountForReceiver, "Expect value = comission + amountForReceiver");
+        Assert.equal(msg.sender, sender, "Wrong msg sender");
+        darilka.setConfirmation{value:msg.value}(address(collection), nftTokenId, passwordKeccakk256Hash);
     }
 
 
