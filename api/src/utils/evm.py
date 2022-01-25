@@ -1,5 +1,3 @@
-import json
-
 from web3 import Web3
 
 from utils.logger import get_app_logger
@@ -8,9 +6,6 @@ from config.settings import settings
 
 logger = get_app_logger()
 
-# todo: to env?
-darilka_contract = '[ { "inputs": [ { "internalType": "uint256", "name": "_comission", "type": "uint256" } ], "stateMutability": "nonpayable", "type": "constructor" }, { "inputs": [ { "internalType": "address", "name": "receiver", "type": "address" }, { "internalType": "address", "name": "nftContract", "type": "address" }, { "internalType": "uint256", "name": "tokenId", "type": "uint256" } ], "name": "bookTransfer", "outputs": [], "stateMutability": "payable", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "newOwner", "type": "address" } ], "name": "changeOwner", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "sender", "type": "address" }, { "internalType": "address", "name": "receiver", "type": "address" }, { "internalType": "address", "name": "nftContract", "type": "address" }, { "internalType": "uint256", "name": "tokenId", "type": "uint256" }, { "internalType": "string", "name": "confirmation", "type": "string" } ], "name": "performTransferNFT", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "nftContract", "type": "address" }, { "internalType": "uint256", "name": "tokenId", "type": "uint256" }, { "internalType": "bytes32", "name": "keccak256ConfirmationHash", "type": "bytes32" } ], "name": "setConfirmation", "outputs": [], "stateMutability": "payable", "type": "function" } ]'
-darilka_contract_abi = json.loads(darilka_contract)
 NONCE_KEY = f"nonce_{settings.ETHEREUM_PUBLIC_ADDRESS}"  # todo: to crud
 
 w3 = Web3(Web3.HTTPProvider(settings.INFURA_HTTPS_ENDPOINT, request_kwargs={'timeout': 60}))
@@ -24,7 +19,7 @@ async def warming_nonce():
 async def crypto_book(receiver_address: str, nft_contract: str, nft_token: str):
     contract = w3.eth.contract(
         address=Web3.toChecksumAddress(settings.DARILKA_CONTRACT_ADDRESS),
-        abi=darilka_contract_abi,
+        abi=settings.DARILKA_CONTRACT_ABI_JSON,
     )
 
     nonce = int(await redis.incr(NONCE_KEY)) - 1
