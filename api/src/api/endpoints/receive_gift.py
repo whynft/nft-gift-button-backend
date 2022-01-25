@@ -5,7 +5,7 @@ import schemas
 from clients.crypto_sdk import CryptoSdk
 from config.settings import settings
 from config.misc import redis  # todo: to crud system?
-from config.logger import get_app_logger
+from utils.logger import get_app_logger
 from utils.evm import crypto_book
 from utils.security import verify_verification_code
 

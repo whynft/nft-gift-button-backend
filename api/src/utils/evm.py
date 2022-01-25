@@ -2,7 +2,7 @@ import json
 
 from web3 import Web3
 
-from config.logger import get_app_logger
+from utils.logger import get_app_logger
 from config.misc import redis
 from config.settings import settings
 

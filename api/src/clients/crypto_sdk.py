@@ -1,6 +1,6 @@
 import aiohttp
 
-from config.logger import get_app_logger
+from utils.logger import get_app_logger
 from schemas import GiftToBookIn
 
 logger = get_app_logger()

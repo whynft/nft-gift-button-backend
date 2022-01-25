@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 
 import schemas
 from config.misc import redis  # todo: to crud system?
-from config.logger import get_app_logger
+from utils.logger import get_app_logger
 from utils.security import create_verification_code, get_verification_code_hash
 
 router = APIRouter()

@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.api import api_router
-from config.logger import get_app_logger
+from utils.logger import get_app_logger
 from config.settings import settings, LOGGING
 
 dictConfig(LOGGING)
