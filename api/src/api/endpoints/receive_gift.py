@@ -56,12 +56,6 @@ async def book(gift_in: schemas.GiftToBookIn):
     res = await crypto_book(
         receiver_address=gift_in.receiver_address, nft_token=gift_in.nft_token, nft_contract=gift_in.nft_contract,
     )
-    # todo: deprecate Js and Js microservice
-    # res = await crypto_sdk.book(
-    #     gift_in,
-    #     centralized_backend_key=settings.ETHEREUM_PRIVATE_KEY,
-    #     transfer_contract=settings.DARILKA_CONTRACT_ADDRESS,
-    # )
     logger.info(f'Booked through crypto, got {res}')
 
     logger.info(f'Remember booking of {gift_in} for {gift_in.receiver_address}')
