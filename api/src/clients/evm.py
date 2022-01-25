@@ -3,17 +3,16 @@ from web3 import Web3
 from utils.logger import get_app_logger
 from config.misc import redis
 from config.settings import settings
+from utils.redisdb import ADDRESS_NONCE_KEY
 
 logger = get_app_logger()
-
-NONCE_KEY = f"nonce_{settings.ETHEREUM_PUBLIC_ADDRESS}"  # todo: to crud
 
 w3 = Web3(Web3.HTTPProvider(settings.INFURA_HTTPS_ENDPOINT, request_kwargs={'timeout': 60}))
 
 
 async def warming_nonce():
     nonce = w3.eth.get_transaction_count(Web3.toChecksumAddress(settings.ETHEREUM_PUBLIC_ADDRESS))
-    await redis.set(NONCE_KEY, nonce)
+    await redis.set(ADDRESS_NONCE_KEY, nonce)
 
 
 async def crypto_book(receiver_address: str, nft_contract: str, nft_token: str):
@@ -22,7 +21,7 @@ async def crypto_book(receiver_address: str, nft_contract: str, nft_token: str):
         abi=settings.DARILKA_CONTRACT_ABI_JSON,
     )
 
-    nonce = int(await redis.incr(NONCE_KEY)) - 1
+    nonce = int(await redis.incr(ADDRESS_NONCE_KEY)) - 1
     logger.info(f'Prepare next operation with {nonce = } for {settings.ETHEREUM_PUBLIC_ADDRESS = }.')
 
     txn_dict = (

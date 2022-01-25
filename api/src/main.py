@@ -27,7 +27,7 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup_event():
-    from utils.evm import warming_nonce
+    from clients.evm import warming_nonce
 
     logger.info("Prepare and initiate nonce according to the chain...")
     await warming_nonce()

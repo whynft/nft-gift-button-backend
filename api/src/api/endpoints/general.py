@@ -1,12 +1,10 @@
 from fastapi import APIRouter
 
 import schemas
-from clients.crypto_sdk import CryptoSdk
 from config.settings import settings
 from utils.logger import get_app_logger
 
 router = APIRouter()
-crypto_sdk = CryptoSdk(settings.CRYPTO_SDK_ENDPOINT)
 logger = get_app_logger()
 
 
