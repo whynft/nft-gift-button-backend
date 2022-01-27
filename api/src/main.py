@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.api import api_router
-from config.logger import get_app_logger
+from utils.logger import get_app_logger
 from config.settings import settings, LOGGING
 
 dictConfig(LOGGING)
@@ -27,7 +27,7 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup_event():
-    from utils.evm import warming_nonce
+    from clients.evm import warming_nonce
 
     logger.info("Prepare and initiate nonce according to the chain...")
     await warming_nonce()

@@ -22,11 +22,6 @@ services:
     depends_on:
       - redis
 
-  crypto_sdk:
-    <<: *prod-app
-    build: crypto_sdk
-    command: [ "npm", "run", "dev" ]
-
   redis:
     <<: *prod-app
     image: redis:6.0.8-alpine

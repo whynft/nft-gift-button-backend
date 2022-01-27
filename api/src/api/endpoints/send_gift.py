@@ -3,7 +3,8 @@ from fastapi.responses import JSONResponse
 
 import schemas
 from config.misc import redis  # todo: to crud system?
-from config.logger import get_app_logger
+from utils.logger import get_app_logger
+from utils.redisdb import compose_gift_verification_code_key
 from utils.security import create_verification_code, get_verification_code_hash
 
 router = APIRouter()
@@ -24,7 +25,11 @@ logger = get_app_logger()
     }
 )
 async def verification_code(gift_in: schemas.Gift):
-    gift_verification_code_key = gift_in.nft_contract + ":" + gift_in.nft_token + ':' + 'passphrase'  # todo
+    gift_verification_code_key = compose_gift_verification_code_key(
+        gift_in.sender_address,
+        gift_in.nft_contract,
+        gift_in.nft_token,
+    )
     gift_verification_code = await redis.get(gift_verification_code_key)
 
     if gift_verification_code:
