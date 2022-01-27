@@ -5,7 +5,7 @@ import schemas
 from config.misc import redis
 from utils.logger import get_app_logger
 from clients.evm import crypto_book
-from utils.redisdb import get_gift_hash_key, get_gift_verification_code_key
+from utils.redisdb import get_gift_hash_key, compose_gift_verification_code_key
 from utils.security import verify_verification_code
 
 router = APIRouter()
@@ -31,7 +31,7 @@ logger = get_app_logger()
     }
 )
 async def book(gift_in: schemas.GiftToBookIn):
-    gift_hash_key = get_gift_hash_key(gift_in.nft_contract, gift_in.nft_token)
+    gift_hash_key = get_gift_hash_key(gift_in.sender_address, gift_in.nft_contract, gift_in.nft_token)
 
     receiver_address = await redis.get(gift_hash_key)
     if receiver_address and receiver_address != gift_in.receiver_address:
@@ -40,14 +40,16 @@ async def book(gift_in: schemas.GiftToBookIn):
             content={"message": f"Already booked by another address: {gift_in.receiver_address}"},
         )
 
-    verification_code_hash = await redis.get(get_gift_verification_code_key(gift_in.nft_contract, gift_in.nft_token))
+    verification_code_hash = await redis.get(
+        compose_gift_verification_code_key(gift_in.sender_address, gift_in.nft_contract, gift_in.nft_token)
+    )
     if not verification_code_hash:
         logger.info(f'Gift is not sent, backend knows nothing: {gift_in}')
         return JSONResponse(
             status_code=status.HTTP_409_CONFLICT,
         )
 
-    if not verify_verification_code(gift_in.verification_code, verification_code_hash):  # todo: pop verification_code
+    if not verify_verification_code(gift_in.verification_code, verification_code_hash):
         return JSONResponse(
             status_code=status.HTTP_403_FORBIDDEN,
             content={"message": f"Verification code is invalid for: {gift_in}"},
