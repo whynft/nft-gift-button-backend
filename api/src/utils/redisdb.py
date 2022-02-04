@@ -4,13 +4,20 @@ from config.settings import settings
 ADDRESS_NONCE_KEY = f"nonce:{settings.ETHEREUM_PUBLIC_ADDRESS}"
 
 
-def get_gift_hash_key(sender: str, nft_contract: str, nft_token: str):
-    """Gift key to receiver.
-    Note:
+class NftGiftRedisKeys:
+    """Convenience class to store keys per gift.
     - we differ sending one gift as we store it on unique together: sender + contract&token.
     """
-    return 'gh' + ":" + sender + ":" + nft_contract + ":" + nft_token  # gh - gift hash
 
+    def __init__(self, sender: str, nft_contract: str, nft_token: str):
+        self.sender = sender
+        self.contract = nft_contract
+        self.token = nft_token
+        self._hash = f'{self.sender}:{self.contract}:{self.token}'
 
-def compose_gift_verification_code_key(sender: str, nft_contract: str, nft_token: str):
-    return 'gvc' + ":" + sender + ":" + nft_contract + ":" + nft_token  # gft - gift verification code
+    def key_to_receiver(self):
+        """We interpret a value existence as booked status for a gift."""
+        return f'gh:{self._hash}'  # gh - gift hash
+
+    def key_to_verification_code(self):
+        return f'gvc:{self._hash}'  # gvt - gift verification code

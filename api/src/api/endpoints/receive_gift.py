@@ -5,7 +5,7 @@ import schemas
 from config.misc import redis
 from utils.logger import get_app_logger
 from clients.evm import crypto_book
-from utils.redisdb import get_gift_hash_key, compose_gift_verification_code_key
+from utils.redisdb import NftGiftRedisKeys
 from utils.security import verify_verification_code
 
 router = APIRouter()
@@ -31,18 +31,17 @@ logger = get_app_logger()
     }
 )
 async def book(gift_in: schemas.GiftToBookIn):
-    gift_hash_key = get_gift_hash_key(gift_in.sender_address, gift_in.nft_contract, gift_in.nft_token)
+    nft_gift_redis_keys = NftGiftRedisKeys(gift_in.sender_address, gift_in.nft_contract, gift_in.nft_token)
+    gift_hash_key = nft_gift_redis_keys.key_to_receiver()
 
     receiver_address = await redis.get(gift_hash_key)
-    if receiver_address and receiver_address != gift_in.receiver_address:
+    if receiver_address:
         return JSONResponse(
             status_code=status.HTTP_423_LOCKED,
-            content={"message": f"Already booked by another address: {gift_in.receiver_address}"},
+            content={"message": f"Already booked by: {gift_in.receiver_address}"},
         )
 
-    verification_code_hash = await redis.get(
-        compose_gift_verification_code_key(gift_in.sender_address, gift_in.nft_contract, gift_in.nft_token)
-    )
+    verification_code_hash = await redis.get(nft_gift_redis_keys.key_to_verification_code())
     if not verification_code_hash:
         logger.info(f'Gift is not sent, backend knows nothing: {gift_in}')
         return JSONResponse(
