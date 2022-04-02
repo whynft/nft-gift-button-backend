@@ -32,7 +32,7 @@ async def crypto_book(receiver_address: str, nft_contract: str, nft_token: str):
             Web3.toChecksumAddress(nft_contract),
             int(nft_token)
         )
-        .buildTransaction({'gas': 150000, 'gasPrice': 30000000000, 'nonce': nonce, })  # todo: make clever
+        .buildTransaction({'gas': 150000, 'gasPrice': 50000000000, 'nonce': nonce, })  # todo: make clever
     )
 
     signed_txn = w3.eth.account.signTransaction(txn_dict, private_key=settings.ETHEREUM_PRIVATE_KEY)
