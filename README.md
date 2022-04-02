@@ -6,6 +6,7 @@ Under the hood we use deployed **Darilka contract** with help of python and HTTP
 
 ## Requirement
 - Created and published Darilka contract [backend should be aware of private key of a contract publisher, ofc]
+- Backend of should have an eth for gas 
 - Docker & Docker Compose
 
 ## Start
