@@ -15,7 +15,8 @@ async def warming_nonce():
     await redis.set(ADDRESS_NONCE_KEY, nonce)
 
 
-async def crypto_book(receiver_address: str, nft_contract: str, nft_token: str):
+async def crypto_book(receiver_address: str, nft_contract: str, nft_token: str) -> str:
+    """Returns transaction hex."""
     contract = w3.eth.contract(
         address=Web3.toChecksumAddress(settings.DARILKA_CONTRACT_ADDRESS),
         abi=settings.DARILKA_CONTRACT_ABI_JSON,
@@ -43,7 +44,7 @@ async def crypto_book(receiver_address: str, nft_contract: str, nft_token: str):
 
     signed_txn = w3.eth.account.signTransaction(txn_dict, private_key=settings.ETHEREUM_PRIVATE_KEY)
 
-    result = w3.eth.sendRawTransaction(signed_txn.rawTransaction)
-    logger.debug(f'Sent transaction to EMV, got {result = }.')
+    transaction = w3.eth.sendRawTransaction(signed_txn.rawTransaction)
+    logger.debug(f'Sent transaction to EMV, got {transaction.hex()}.')
 
-    return result
+    return transaction.hex()
