@@ -23,7 +23,7 @@ def _is_transaction_nonce_low(web3_error) -> bool:
 
 async def crypto_book(receiver_address: str, nft_contract: str, nft_token: str) -> str:
     """Returns transaction hex.
-    Note that we want to allow retry on wrong nonce and implement such continues retry policy.
+    Note, that we want to allow retry on wrong nonce and implement such continues retry policy.
     The issue comes when private key is used in external from app manner - directly from metamask e.g.
     (ref to https://github.com/whynft/nft-gift-button-backend/issues/10).
     """
@@ -54,14 +54,14 @@ async def crypto_book(receiver_address: str, nft_contract: str, nft_token: str) 
 
     signed_txn = w3.eth.account.signTransaction(txn_dict, private_key=settings.ETHEREUM_PRIVATE_KEY)
 
-    try:
-        transaction = w3.eth.sendRawTransaction(signed_txn.rawTransaction)
-    except ValueError as e:
-        if _is_transaction_nonce_low(e):
-            async with lock:
-                await warming_nonce()
-            return await crypto_book(receiver_address, nft_contract, nft_token)
-        raise(e)
-
-    logger.debug(f'Sent transaction to EMV, got transaction = {transaction.hex()}.')
-    return transaction.hex()
+    while True:
+        try:
+            transaction = w3.eth.sendRawTransaction(signed_txn.rawTransaction)
+            logger.debug(f'Sent transaction to EMV, got transaction = {transaction.hex()}.')
+            return transaction.hex()
+        except ValueError as e:
+            if _is_transaction_nonce_low(e):
+                async with lock:
+                    await warming_nonce()
+            else:
+                raise(e)
