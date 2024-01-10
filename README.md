@@ -1,6 +1,6 @@
 # nft-gift-button-backend
 
-The backend represents by itself a backend for the [Rarible proposal](https://gov.rarible.org/t/nft-gift-button-grant-proposal/263).
+The backend represents by itself a trustless backend for the [Rarible proposal](https://gov.rarible.org/t/nft-gift-button-grant-proposal/263).
 
 Under the hood we use deployed **Darilka contract** with help of python and HTTPProvider. 
 
